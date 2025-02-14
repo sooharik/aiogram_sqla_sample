@@ -3,8 +3,8 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 
-from app.user import user
-from app.admin import admin
+from app.handlers.user import user # type: ignore
+from app.handlers.admin import admin
 
 from config import TOKEN
 
@@ -17,18 +17,19 @@ async def main():
     
     dp = Dispatcher()
     dp.include_routers(user, admin)
-    dp.startup.register(startup)
-    dp.shutdown.register(shutdown)
-    
-    await dp.start_polling(bot)
+    async def on_shutdown(dispatcher: Dispatcher):
+        await dispatcher.storage.close()
+        await dispatcher.storage.wait_closed()
+        await dispatcher.shutdown()
+        await dp.start_polling(bot)
 
 
-async def startup(dispatcher: Dispatcher):
+async def on_startup(dispatcher: Dispatcher):
     await async_main()
     print('Starting up...')
 
 
-async def shutdown(dispatcher: Dispatcher):
+async def on_shutdown(dispatcher: Dispatcher):
     print('Shutting down...')
 
 

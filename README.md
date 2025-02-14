@@ -22,7 +22,7 @@ source .venv/bin/activate
 ```
 **Install packages**:
 ```bash
-pip install -r requirements.txt
+pip install -r "absolutepath"/requirements.txt
 ```
 ---
 And start coding! 
